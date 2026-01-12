@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Price Prediction</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      min-height: 100vh;
+      color: #fff;
+      padding: 20px 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .form-container {
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 750px;
+      margin: 60px auto;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 10;
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: bold;
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.7);
+      font-size: 2rem;
+    }
+
+    label {
+      color: #fff;
+      font-weight: 400;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-control {
+      padding: 12px 15px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      transition: all 0.3s;
+      height: 48px;
+      border-radius: 8px;
+      width: 100%;
+      display: block;
+    }
+
+    .form-control:focus {
+      border-color: #00ff88;
+      box-shadow: 0 0 0 0.3rem rgba(0, 255, 136, 0.25);
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    select.form-control {
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      cursor: pointer;
+      position: relative;
+      z-index: 99;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    select.form-control option {
+      background-color: #222;
+      color: #fff;
+      padding: 10px;
+    }
+
+    .btn-predict {
+      background: linear-gradient(to right, #00c853, #00e676);
+      border: none;
+      font-weight: bold;
+      padding: 15px;
+      font-size: 1.2rem;
+      transition: all 0.3s;
+      border-radius: 8px;
+      margin-top: 10px;
+      letter-spacing: 1px;
+      width: 100%;
+      color: #fff;
+    }
+
+    .btn-predict:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(0, 255, 136, 0.5);
+    }
+
+    #result {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: bold;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: none;
+    }
+
+    .validation-summary {
+      background-color: rgba(255, 0, 0, 0.2);
+      border: 1px solid rgba(255, 0, 0, 0.5);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .validation-summary ul {
+      margin-bottom: 0;
+      padding-left: 20px;
+    }
+
+    .is-invalid {
+      border-color: #dc3545 !important;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-right: -5px;
+      margin-left: -5px;
+    }
+    
+    .form-row > .col-md-6 {
+      padding-right: 5px;
+      padding-left: 5px;
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="form-container">
+    <span style="font-size:1.5rem;">🏠</span>
+    <h2> Price Prediction</h2>
+
+    <div class="validation-summary" id="validationSummary" style="display:none;">
+      <strong>Please fix the following errors:</strong>
+      <ul id="errorList"></ul>
+    </div>
+
+    <form id="predictionForm" novalidate>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="bedrooms">Bedrooms</label>
+          <input type="number" id="bedrooms" name="bedrooms" class="form-control"
+                 placeholder="Enter 1-6" min="1" max="6" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="bathrooms">Bathrooms</label>
+          <input type="number" id="bathrooms" name="bathrooms" class="form-control"
+                 placeholder="Enter 1-4" min="1" max="4" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="square_feet">Square Feet</label>
+          <input type="number" id="square_feet" name="square_feet" class="form-control"
+                 placeholder="Enter 600-4000" min="600" max="4000" required>
+        </div>
+        <div class="form-group col-md-6">
+		  <label for="location">Location</label>
+		  <select id="location" name="location" class="form-control" required>
+			<option value="">Select a location</option>
+			{% for loc in locations %}
+			  <option value="{{ loc }}">{{ loc }}</option>
+			{% endfor %}
+		  </select>
+		</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="year_built">Year Built</label>
+          <input type="number" id="year_built" name="year_built" class="form-control"
+                 placeholder="Enter 1980-2024" min="1980" max="2024" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="garage">Garage</label>
+          <select id="garage" name="garage" class="form-control" required>
+            <option value="">Select an option</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="has_pool">Has Pool</label>
+          <select id="has_pool" name="has_pool" class="form-control" required>
+            <option value="">Select an option</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="property_type">Property Type</label>
+          <select id="property_type" name="property_type" class="form-control" required>
+              <option value="">Select a property type</option>
+              {% for p in property_types %}
+                  <option value="{{ p }}">{{ p }}</option>
+              {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="num_floors">Number of Floors</label>
+          <input type="number" id="num_floors" name="num_floors" class="form-control"
+                 placeholder="Enter 1-3" min="1" max="3" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="has_basement">Has Basement</label>
+          <select id="has_basement" name="has_basement" class="form-control" required>
+            <option value="">Select an option</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-predict btn-block">Predict Price</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+</div>
+
+<script>
+console.log("✅ Script loaded");
+
+
+function validateForm() {
+  let valid = true;
+  const errorList = document.getElementById("errorList");
+  errorList.innerHTML = "";
+
+  const numericFields = [
+    { id: "bedrooms", min: 1, max: 6 },
+    { id: "bathrooms", min: 1, max: 4 },
+    { id: "square_feet", min: 600, max: 4000 },
+    { id: "year_built", min: 1980, max: new Date().getFullYear() },
+    { id: "num_floors", min: 1, max: 3 }
+  ];
+
+  numericFields.forEach(f => {
+    const el = document.getElementById(f.id);
+    const val = Number(el.value);
+    if (isNaN(val) || val < f.min || val > f.max) {
+      valid = false;
+      el.classList.add("is-invalid");
+      const li = document.createElement("li");
+      li.textContent = `${el.previousElementSibling.innerText} must be between ${f.min} and ${f.max}`;
+      errorList.appendChild(li);
+    } else {
+      el.classList.remove("is-invalid");
+    }
+  });
+
+  ["location","garage","has_pool","property_type","has_basement"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el.value){
+      valid=false;
+      el.classList.add("is-invalid");
+      const li=document.createElement("li");
+      li.textContent=`Please select a value for ${el.previousElementSibling.innerText}`;
+      errorList.appendChild(li);
+    }else{
+      el.classList.remove("is-invalid");
+    }
+  });
+
+  document.getElementById("validationSummary").style.display = valid ? "none" : "block";
+  return valid;
+}
+
+document.getElementById("predictionForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!validateForm()) return;
+
+  const formData = new FormData(e.target);
+  const data = {};
+  formData.forEach((v, k) => data[k] = isNaN(v) ? v : Number(v));
+
+  const btn = e.target.querySelector("button");
+  const orig = btn.innerHTML;
+  btn.innerHTML = "⏳ Predicting...";
+  btn.disabled = true;
+
+  try {
+    const res = await fetch("/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    const output = document.getElementById("result");
+    if (res.ok && result.predicted_price !== undefined) {
+      const price = result.predicted_price;
+      output.innerHTML = `💰 Estimated Property Price:<br>
+                          <strong>$${price.toLocaleString()}</strong>`;
+    } else {
+      output.textContent = "❌ Error: " + (result.error || "Unknown error");
+    }
+    output.style.display = "block";
+  } catch (err) {
+    console.error(err);
+    document.getElementById("result").textContent = "❌ Network error: " + err.message;
+    document.getElementById("result").style.display = "block";
+  } finally {
+    btn.innerHTML = orig;
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
