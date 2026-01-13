@@ -17,7 +17,7 @@ def download_model():
     model_url = "https://github.com/sumanth778/Property-Final/releases/download/Model/Random_forest_price_regressor.pkl"
     model_path = "Random_forest_price_regressor.pkl"
     
->>>>>>> 241b4f9f92c761cc8eed736944cedd1cd7245257
+
 
     if not os.path.exists(model_path):
         print(f"Downloading model from GitHub Releases: {model_url}")
