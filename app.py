@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 
 model = joblib.load('Random_forest_price_regressor.pkl')
-df = pd.read_csv("balanced_synthetic_real_estate.csv")
+df = pd.read_csv("New_Data.csv")
 
 location_le = LabelEncoder()
 location_le.classes_ = df['location'].unique()
