@@ -9,10 +9,10 @@ import requests
 app = Flask(__name__)
 
 
-<<<<<<< HEAD
+
 model = joblib.load('Random_forest_price_regressor.pkl')
 df = pd.read_csv("New_Data.csv")
-=======
+
 def download_model():
     model_url = "https://github.com/sumanth778/Property-Final/releases/download/Model/Random_forest_price_regressor.pkl"
     model_path = "Random_forest_price_regressor.pkl"
